@@ -1,9 +1,8 @@
 package com.example.minishopmanager
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,20 +12,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Suivi du cycle de vie dans Logcat
-        Log.d("LIFECYCLE", "onCreate appelé")
+        val listView = findViewById<ListView>(R.id.listViewProducts)
 
-        // Liaison avec le bouton de l'interface
-        val btnNext = findViewById<Button>(R.id.btnNext)
+        // Charger le tableau de produits défini dans strings.xml
+        val products = resources.getStringArray(R.array.products)
 
-        // Gestion du clic sur le bouton
-        btnNext.setOnClickListener {
-            // Affichage du Toast
-            Toast.makeText(this, "Bonjour Asma AYARI !", Toast.LENGTH_SHORT).show()
+        // Créer l'adaptateur pour lier les données au ListView
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, products)
+        listView.adapter = adapter
 
-            // Navigation vers ProfileActivity
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+        // Gérer le clic sur un élément
+        listView.setOnItemClickListener { parent, _, position, _ ->
+            val item = parent.getItemAtPosition(position).toString()
+            Toast.makeText(this, "Produit sélectionné: $item", Toast.LENGTH_SHORT).show()
         }
     }
 }
