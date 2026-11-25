@@ -1,0 +1,8 @@
+{
+  "produits": [
+    {"nom": "Téléphone Samsung", "prix": 1200},
+    {"nom": "Casque Bluetooth", "prix": 150},
+    {"nom": "Montre Connectée", "prix": 300},
+    {"nom": "Chargeur Rapide USB-C", "prix": 45}
+  ]
+}

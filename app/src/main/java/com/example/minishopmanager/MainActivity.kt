@@ -1,10 +1,12 @@
 package com.example.minishopmanager
 
+import android.content.ContentValues
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,18 +15,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.listViewProducts)
+        val produits = lireProduitsDepuisJSON()
 
-        // Charger le tableau de produits défini dans strings.xml
-        val products = resources.getStringArray(R.array.products)
-
-        // Créer l'adaptateur pour lier les données au ListView
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, products)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, produits)
         listView.adapter = adapter
 
-        // Gérer le clic sur un élément
-        listView.setOnItemClickListener { parent, _, position, _ ->
-            val item = parent.getItemAtPosition(position).toString()
-            Toast.makeText(this, "Produit sélectionné: $item", Toast.LENGTH_SHORT).show()
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val produitSelectionne = produits[position]
+            Toast.makeText(this, "Ajouté au panier : $produitSelectionne", Toast.LENGTH_SHORT).show()
+
+            val dbHelper = DBHelper(this)
+            val db = dbHelper.writableDatabase
+            val values = ContentValues().apply {
+                put("nom", produitSelectionne)
+                put("prix", (50..1200).random())
+            }
+            db.insert("panier", null, values)
+            db.close()
         }
+    }
+
+    private fun lireProduitsDepuisJSON(): ArrayList<String> {
+        val liste = ArrayList<String>()
+        val jsonString = assets.open("produits.json").bufferedReader().use { it.readText() }
+        val jsonArray = JSONObject(jsonString).getJSONArray("produits")
+        for (i in 0 until jsonArray.length()) {
+            val p = jsonArray.getJSONObject(i)
+            liste.add("${p.getString("nom")} - ${p.getInt("prix")} DT")
+        }
+        return liste
     }
 }
